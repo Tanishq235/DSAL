@@ -1,99 +1,86 @@
-class setadt:
+class SetADT:
     def __init__(self):
-        self.elements=[]
-        
-    def add(self,element):
+        self.elements = []
+
+    def add(self, element):
         if element not in self.elements:
             self.elements.append(element)
-            
-    def remove(self,element):
-        if element in self.elements:
-            self.elements.remove(element)
-            
+
     def display(self):
-        for element in self.elements:
-            print(element)
-    
-    def search(self,element):
-        return element in self.elements       
-    
-    def iterator(self):
-        return iter(self.elements)
-    
+        print(self.elements)
+
+    def search(self, element):
+        return element in self.elements
+
     def size(self):
         return len(self.elements)
-    
-    def intersection(self, other_set):
-        result=setadt()
-        if other_set:
-            for element in self.elements:
-                if element in other_set.elements:
-                    result.add(element)
+
+    def union(self, other):
+        result = SetADT()
+        for e in self.elements:
+            result.add(e)
+        for e in other.elements:
+            result.add(e)
         return result
-                    
-    def union(self, other_set):
-        result =setadt()
-        if other_set:
-            for element in self.elements:
-                result.add(element)
-            for element in other_set.elements:
-                result.add(element)
-        else:
-            for element in self.elements:
-                result.add(element)
+
+    def intersection(self, other):
+        result = SetADT()
+        for e in self.elements:
+            if e in other.elements:
+                result.add(e)
         return result
-    
-    def difference(self,other_set):
-        result=setadt()
-        if other_set:
-            for element in self.elements:
-                if element not in other_set.elements:
-                    result.add(element)
-        else:
-            for element in self.elements:
-                result.add(element)
+
+    def difference(self, other):
+        result = SetADT()
+        for e in self.elements:
+            if e not in other.elements:
+                result.add(e)
         return result
-    
-    def subset(self,other_set):
-        if other_set:
-            for element in self.elements:
-                if element not in other_set.elements:
-                    return False
+
+    def is_subset(self, other):
+        for e in self.elements:
+            if e not in other.elements:
+                return False
         return True
 
-set1 = setadt()
-set2 = setadt()
-                      
-set1.add(1)    
-set1.add(2)
-set1.add(3)
-    
-set2.add(5)    
-set2.add(4)
-set2.add(8)
-    
-print("Set 1")
-set1.display()
-print("Set 2")
-set2.display()
-    
-print("set 1 size", set1.size())
-print("set 2 size", set2.size())
+# Create two sets
+set1 = SetADT()
+set2 = SetADT()
 
-print("set 1 contains 2",set1.search(2))
+# Input sets
+print("Enter elements for Set 1 (comma separated):")
+for e in input().split(","):
+    set1.add(e.strip())
 
-difference= set1.difference(set2)
-print("Difference(set1-set2): ",list(difference.iterator()))
+print("Enter elements for Set 2 (comma separated):")
+for e in input().split(","):
+    set2.add(e.strip())
 
-union=set1.union(set2)
-print("union",list(union.iterator()))
+# Simple menu
+while True:
+    print("\n1. Display Sets\n2. Union\n3. Intersection\n4. Difference (Set1 - Set2)")
+    print("5. Is Set1 Subset of Set2?\n6. Search in Set1\n7. Sizes\n8. Exit")
+    choice = input("Enter choice: ")
 
-print("is set1 a subset of set2",set1.subset(set2))
-
-intersection = set1.intersection(set2)
-print("interaction: ", list(intersection.iterator()))        
-    
-    
-    
-    
-            
+    if choice == '1':
+        print("Set 1:", end=" "); set1.display()
+        print("Set 2:", end=" "); set2.display()
+    elif choice == '2':
+        print("Union:", end=" "); set1.union(set2).display()
+    elif choice == '3':
+        print("Intersection:", end=" "); set1.intersection(set2).display()
+    elif choice == '4':
+        print("Difference:", end=" "); set1.difference(set2).display()
+    elif choice == '5':
+        print("Yes" if set1.is_subset(set2) else "No")
+    elif choice == '6':
+        item = input("Enter item to search in Set 1: ")
+        print("Found" if set1.search(item) else "Not Found")
+    elif choice == '7':
+        print("Size of Set 1:", set1.size())
+        print("Size of Set 2:", set2.size())
+    elif choice == '8':
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid choice.")
