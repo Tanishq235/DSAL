@@ -1,130 +1,79 @@
-
-// Represent a given graph using adjacency matrix/list to perform DFS and using adjacency
-// list to perform BFS. Use the map of the area around the college as the graph. Identify
-// the prominent land marks as nodes and perform DFS and BFS on that.
-
 #include <iostream>
 using namespace std;
 
-class Node {
-public:
-    int data;
-    Node* next;
-    Node(int val) {
-        data = val;
-        next = NULL;
-    }
-};
-
-class Queue {
-    int arr[10];
-    int front, rear;
-
-public:
-    Queue() {
-        front = rear = -1;
-    }
-
-    bool isEmpty() {
-        return front == -1;
-    }
-
-    void enqueue(int x) {
-        if (rear == 9) return; 
-        if (isEmpty())
-            front = 0;
-        arr[++rear] = x;
-    }
-
-    int dequeue() {
-        if (isEmpty()) return -1;
-        int temp = arr[front];
-        if (front == rear)
-            front = rear = -1;
-        else
-            front++;
-        return temp;
-    }
-};
+#define k 10
 
 class Graph {
-    int matrix[6][6];
-    Node* list[6];
-    int visitedDFS[6];
-    int visitedBFS[6];
+    int g[10][10];         // Adjacency matrix
+    int visited[10];       // Visited nodes
+    string landmark[k];    // Names of landmarks
+    int n;                 // Number of landmarks
 
 public:
-    string landmark[6] = {
-        "Main Gate", "Playground", "Cafe", "HOD CABIN", "Playground", "CITP HALL"
-    };
-
     Graph() {
-        for (int i = 0; i < 6; i++) {
-            visitedDFS[i] = visitedBFS[i] = 0;
-            list[i] = NULL;
-            for (int j = 0; j < 6; j++)
-                matrix[i][j] = 0;
-        }
-
-        addEdge(0, 1); 
-        addEdge(0, 2); 
-        addEdge(1, 5); 
-        addEdge(2, 3); 
-        addEdge(3, 4);
-        addEdge(4, 5); 
-    }
-
-    void addEdge(int u, int v) {
-        matrix[u][v] = matrix[v][u] = 1;
-
-        Node* node1 = new Node(v);
-        node1->next = list[u];
-        list[u] = node1;
-
-        Node* node2 = new Node(u);
-        node2->next = list[v];
-        list[v] = node2;
-    }
-
-    void dfs(int v) {
-        visitedDFS[v] = 1;
-        cout << landmark[v] << " -> ";
-        for (int i = 0; i < 6; i++) {
-            if (matrix[v][i] == 1 && !visitedDFS[i])
-                dfs(i);
-        }
-    }
-
-    void bfs(int start) {
-        Queue q;
-        q.enqueue(start);
-        visitedBFS[start] = 1;
-
-        while (!q.isEmpty()) {
-            int node = q.dequeue();
-            cout << landmark[node] << " -> ";
-            Node* temp = list[node];
-            while (temp != NULL) {
-                if (!visitedBFS[temp->data]) {
-                    q.enqueue(temp->data);
-                    visitedBFS[temp->data] = 1;
-                }
-                temp = temp->next;
+        for (int i = 0; i < 10; i++) {
+            visited[i] = 0;
+            for (int j = 0; j < 10; j++) {
+                g[i][j] = 0;
             }
         }
     }
+
+    void adj_mat_readgraph();
+    void display_DFS(int t);
+    void printLandmarks();
+    int getN() { return n; }
 };
+
+void Graph::adj_mat_readgraph() {
+    cout << "\nEnter the total number of landmarks: ";
+    cin >> n;
+
+    cout << "Enter the names of the landmarks:\n";
+    for (int i = 0; i < n; i++) {
+        cout << i << ": ";
+        cin >> landmark[i];
+    }
+
+    cout << "\nEnter the adjacency matrix:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << "Is there a connection from " << landmark[i]
+                 << " to " << landmark[j] << "? (1/0): ";
+            cin >> g[i][j];
+        }
+    }
+}
+
+void Graph::display_DFS(int t) {
+    cout << landmark[t] << " ";
+    visited[t] = 1;
+
+    for (int i = 0; i < n; i++) {
+        if (g[t][i] == 1 && visited[i] == 0) {
+            display_DFS(i);
+        }
+    }
+}
+
+void Graph::printLandmarks() {
+    for (int i = 0; i < n; i++) {
+        cout << i << ": " << landmark[i] << endl;
+    }
+}
 
 int main() {
     Graph g;
+    g.adj_mat_readgraph();
 
-    cout << "DFS Traversal (Starting from Main Gate):\n";
-    g.dfs(0);
-    cout << "END\n\n";
+    int startNode;
+    cout << "\nChoose the starting node for DFS traversal:\n";
+    g.printLandmarks();
+    cin >> startNode;
 
-    cout << "BFS Traversal (Starting from Main Gate):\n";
-    g.bfs(0);
-    cout << "END\n";
+    cout << "\nDFS Traversal: ";
+    g.display_DFS(startNode);
+    cout << endl;
 
     return 0;
 }
